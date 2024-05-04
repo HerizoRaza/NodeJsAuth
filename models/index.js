@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize')
 const database = require('../bin/database')
-console.log(database.connection)
+//console.log(database.connection)
 
 const sequelize = new Sequelize(database.connection.DB, database.connection.USER, database.connection.PASSWORD, {
     host: database.connection.HOST,

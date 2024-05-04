@@ -4,7 +4,7 @@ connection = {
     HOST: process.env.POSTGRES_HOST || "localhost",
     USER: process.env.POSTGRES_USER || "postgres",
     PASSWORD: process.env.POSTGRES_PASSWORD || "pass123",
-    DB: process.env.POSTGRES_DB || "postgres",
+    DB: process.env.POSTGRES_DB || "auth_db",
     dialect: process.env.DATABASE_TYPE || "postgres",
     pool: {
         max: 5,
