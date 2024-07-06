@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../models')
 const app = express();
+const { hashpassword } = require('../midlleware/helper')
 
 app.use(express.json());
 
@@ -13,14 +14,17 @@ const userTest = (req,res) => {
 }
 const addUser = async (req, res) => {
     try {
-        const newUser = await db.user.build({
+        var password = hashpassword(req.body.password)
+        const newUser = await db.users.build({
             email: req.body.email,
-            password: req.body.password,
+            password: password,
             username: req.body.username,
             firstname: req.body.firstname,
-            lastname: req.body.lastname
+            lastname: req.body.lastname,
+            role: req.body.role,            
+            phone: req.body.phone            
         });
-        if (!req.body.email) {
+        if (!req.body.email || !req.body.username || !req.body.password) {
             res.status(200).json({ message: 'Les champs sont requis dans le corps de la requête.' });
         } else {
             // Enregistrez l'utilisateur dans la base de données en appelant la méthode save

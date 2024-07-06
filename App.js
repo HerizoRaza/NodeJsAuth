@@ -4,17 +4,18 @@ const config = require("./bin/Config")
 const db = require('./models')
 const path = require('path')
 const cookieParser = require('cookie-parser')
+const cors = require('cors')
 const logger = require('morgan')
 const { errorParsor } = require('./midlleware/error-parser')
 const { pathLogger } = require('./midlleware/path-logger')
 
 // cors & options
-var corsOptions = {
-    origin: '*',
-    methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
-    preflightContinue: false,
-    optionsSuccessStatus: 204
-  }
+app.use(cors({
+    "origin": "*",
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "preflightContinue": false,
+    "optionsSuccessStatus": 204
+}));
 
 // type data REST
 app.use(logger('dev'))
