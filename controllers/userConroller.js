@@ -2,6 +2,8 @@ const express = require('express');
 const db = require('../models')
 const app = express();
 const { hashpassword } = require('../midlleware/helper')
+const jwt = require("jsonwebtoken");
+
 
 app.use(express.json());
 
@@ -37,4 +39,17 @@ const addUser = async (req, res) => {
         res.status(400).json({ message: 'Erreur lors de l\'ajout de l\'utilisateur' });
     }
 };
-module.exports = { userTest, addUser }
+
+const getAll = async (req, res) => {
+    try {
+        const user = await db.users.findAll()
+        if (user.length !== 0) {
+            res.status(200).json({ data: user, message: 'success' })
+        } else {
+            res.status(200).json({ message: 'user empty' })
+        }
+    } catch (error) {
+        res.status(400).json({ message: "error "})
+    }
+}
+module.exports = { userTest, addUser , getAll}
