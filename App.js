@@ -4,6 +4,7 @@ const config = require("./bin/Config")
 const db = require('./models')
 const path = require('path')
 const cookieParser = require('cookie-parser')
+const morgan = require('morgan');
 const cors = require('cors')
 const logger = require('morgan')
 const { errorParsor } = require('./midlleware/error-parser')

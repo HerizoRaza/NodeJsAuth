@@ -1,4 +1,5 @@
 require('dotenv').config
+const { Pool } = require('pg');
 
 connection = {
     HOST: process.env.POSTGRES_HOST || "localhost",
@@ -13,5 +14,15 @@ connection = {
         idle: 10000,
     },
 }
+const pool = new Pool ({
+    host: process.env.DB_WRITE_HOST || 'localhost',
+    PASSWORD: process.env.POSTGRES_PASSWORD || "pass123",
+    USER: process.env.POSTGRES_USER || "postgres",
+    DB: process.env.POSTGRES_DB || "authdb",
+    port: process.env.POSTGRES_PORT || 3030,
+    waitForConnections: true,
+    connectionLimit: 100,
+    queueLimit: 0
+});
 
-module.exports = {connection}
+module.exports = {connection, pool}
