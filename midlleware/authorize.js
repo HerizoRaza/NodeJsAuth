@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+const config = require('../bin/Config');
 
 const authorize = (req, res, next) => {
     console.log('middleware[authenticate]');
@@ -10,8 +11,9 @@ const authorize = (req, res, next) => {
             if(decoded){
                 return next();
             }
-        } catch (e) {
-            
+        } catch (err) {
+            console.error('JWT Error:', err.message);
+            return res.status(400).json({ message: 'Token invalide.' });
         }
         
     }

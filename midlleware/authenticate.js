@@ -1,40 +1,22 @@
 const jwt = require('jsonwebtoken');
-const Users = require('../models/user');
+const config = require('../bin/Config')
+
 
 const authenticate = (req, res, next) => {
-    const authorization = req.headers['authorization'];
-    if(authorization){        
-        const token = authorization.replace('Bearer ','').replace('bearer ','');
-        try {
-            const decoded = jwt.verify(token, config.jwtSecret);
-           
-            if(decoded){
-                return Users.findById(decoded.sub, (err, response) => {
-                    if(!err && response){
-                        console.log(response);
-                        req.users = response;
-                        return next();
-                    }
-                    return res.status(401).send({error: 'Unauthorized', message : 'Authentication failed (token) decoded sub.'});
-                });
-            }
-        } catch (e){        
-        }
-    }
-    return res.status(401).send({error: 'Unauthorized', message : 'Authentication failed (token). authorization'});
-}
+    try {
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
 
-const IsUser = (req, res, next) => {
-    if (req.user.user_type_id === 0) {
-        next();
+        if (token = null ) return res.status(401).json({error:"Null token"});
+        jwt.verify(token, config.JWT_SECRET, (error, id) => {
+            if (error) return res.status(403).json({error : error.message});
+            req.id = id;
+            next();
+        });
+        res.status(200).json({message: 'ato eeeeee' })
+    } catch (error) {
+        res.status(400).json({message: error.message }); // Capture toute autre erreur
     }
-    return res.status(401).send("Unauthorized!");   
-}
-exports.IsAdmin = async (req, res, next) => {
-    if (req.user.user_type_id === 1) {
-        next();
-    }
-    return res.status(401).send("Unauthorized!");
-}
+};
 
-module.exports = authenticate, IsUser;
+module.exports = authenticate;

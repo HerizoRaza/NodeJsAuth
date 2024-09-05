@@ -1,6 +1,5 @@
 'use strict'
-const { pool } = require('../bin/Config');
-
+const { pool } = require('../bin/database');
 // User object constructor
 const User = (data) => {
     this.id = data.id;
@@ -14,7 +13,7 @@ const User = (data) => {
 const findById = function createUser(userId, result) {
 
     // For pool initialization, see above
-    pool.getConnection(function (err, conn) {
+    const connection = pool.getConnection(function (err, conn) {
         conn.query("Select * from users where id = ?", userId, function (err, res) {
             if (err) {
                 // Don't forget to release the connection when finished!
@@ -28,10 +27,12 @@ const findById = function createUser(userId, result) {
             }
         });
     })
+    cosole.log(connection)
 };
 
-const users = (sequelize , Sequelize) => {
-    return sequelize.define('users', {
+const Users = (sequelize , Sequelize) => {
+
+   const users =  sequelize.define('users', {
         username: Sequelize.STRING(200),
         firstname: Sequelize.STRING(200),
         lastname: Sequelize.STRING(200),
@@ -40,15 +41,16 @@ const users = (sequelize , Sequelize) => {
             require:true,
             lowercase: true,
             unique: true
-        },
+        },        
         password: Sequelize.STRING(200),
         role: {
             type: Sequelize.ENUM,
-            values: ['ADMIN', 'CLIENT'],
-            defaultValue: 'CLIENT'
+            values: ['ADMIN', 'AGENT','STAGIARE'],
+            defaultValue: 'AGENT'
         },    
         phone: Sequelize.STRING,
 
     }, { freezeTableName: true });
+    return users;
 }
-module.exports = { User, users, findById };
+module.exports = { Users, User, findById };

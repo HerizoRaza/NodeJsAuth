@@ -1,5 +1,4 @@
 const database = require('../bin/database')
-console.log(database.connection)
 const Sequelize = require('sequelize')
 
 const sequelize = new Sequelize(database.connection.DB, database.connection.USER, database.connection.PASSWORD, {
@@ -20,6 +19,6 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 // variable call models
-db.users = require("./user").users(sequelize, Sequelize)
+db.users = require("./user").Users(sequelize, Sequelize)
 
 module.exports = db;
