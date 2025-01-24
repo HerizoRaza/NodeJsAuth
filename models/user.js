@@ -33,22 +33,24 @@ const findById = function createUser(userId, result) {
 const Users = (sequelize , Sequelize) => {
 
    const users =  sequelize.define('users', {
-        username: Sequelize.STRING(200),
-        firstname: Sequelize.STRING(200),
-        lastname: Sequelize.STRING(200),
+        username: Sequelize.STRING(100),
+        firstname: Sequelize.STRING(100),
+        lastname: Sequelize.STRING(100),
         email:{
-            type: Sequelize.STRING(200),
+            type: Sequelize.STRING(100),
             require:true,
             lowercase: true,
             unique: true
         },        
-        password: Sequelize.STRING(200),
+        password: Sequelize.STRING(100),
         role: {
             type: Sequelize.ENUM,
             values: ['ADMIN', 'AGENT','STAGIARE'],
             defaultValue: 'AGENT'
         },    
-        phone: Sequelize.STRING,
+        phone: Sequelize.STRING(100),
+        createdAt: Sequelize.STRING(100),
+        updatedAt: Sequelize.STRING(100)
 
     }, { freezeTableName: true });
     return users;
