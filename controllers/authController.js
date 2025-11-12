@@ -1,67 +1,55 @@
-const bcryptjs = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { pool }= require('../bin/database');
-
+const User = require("../models/user");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const userTest = async (req, res) => {
-    try {
-        const result = await pool.query('SELECT NOW()');
-        res.status(200).json({
-          message: 'PostgreSQL connected successfully',
-          timestamp: result.rows[0].now,
-        });
-      } catch (err) {
-        console.error('Error connecting to PostgreSQL:', err.message);
-        res.status(500).json({
-          message: 'Error connecting to PostgreSQL',
-          error: err.message,
-        });
-      }
-}
-    
-const register = async (req, res) => {
-    const { email , password , username , role } = req.body;
-    //const { createdAt , updatedAt } = convertDate(date)
-    try {
-        const hashedPassword = await bcryptjs.hash(password, 10);
-        const result = await pool.query(
-        'INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3 , $4) RETURNING *',
-        [username, email, hashedPassword, role])
-        res.status(201).json({ message: 'User registered', user: result.rows[0] });
-    } catch (error) {
-        console.log(error)
-        res.status(401).json({ message: error })
-    }
-}
+  res.status(200).json({message : "success code"})
+};
 
-const loginUser = async (req, res) => {
-  const { email, password } = req.body;
-
+const register = async(req,res) => {
   try {
-    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-    if (result.rows.length === 0) return res.status(401).json({ error: 'Invalid credentials' });
+    const  { firstname,lastname,username, email, password, role } = req.body;
+    console.log("Données reçues :", req.body);
+    const exist = await User.findOne({ email });
+    if (exist) return res.status(400).json({ message: "Email déjà utilisé" });
 
-    const user = result.rows[0];
-    const validPassword = await bcryptjs.compare(password, user.password);
-    if (!validPassword) return res.status(401).json({ error: 'Invalid credentials' });
+    // Hasher le mot de passe
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.status(200).json({ token });
+    // Créer utilisateur
+    const user = new User({ firstname,lastname,username , email, password: hashedPassword, role });
+    await user.save();
+
+    res.status(201).json({ message: "Utilisateur créé avec succès" });
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
-const getUserAll = async (req, res) => {
+
+const login = async(req, res) => {
   try {
-      const user = await db.users.findAll()
-      if (user.length !== 0) {
-          res.status(200).json({ data: user, message: 'success' })
-      } else {
-          res.status(200).json({ message: 'produit empty' })
-      }
-  } catch (error) {
-      res.status(400).json({ message: error })
+    const { email, password } = req.body;
+
+    // Vérifier si user existe
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: "Utilisateur non trouvé" });
+
+    // Vérifier mot de passe
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ message: "Mot de passe incorrect" });
+
+    // Générer token
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET || "eysdmfklsdfjsdfsmdflkqdjfqdmflkjdkeifdjd",
+      { expiresIn: "24h" }
+    );
+    console.log(token)
+
+    res.json({ token, role: user.role });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 }
-
-module.exports = {userTest , register , loginUser, getUserAll }
+module.exports = {userTest, register, login}

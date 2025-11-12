@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+//const verifyAuth = require('../midlleware/helper')
 
 // import controller
 const auth = require('../controllers/authController')
@@ -11,10 +12,9 @@ const auth = require('../controllers/authController')
 //router.route('/singin').post(validate(validationAuth.singinParam), singin.singin);
 
 
-router.get('/test',auth.userTest)
-router.post('/register',auth.register)
-router.post('/login', auth.loginUser)
-router.get('/getuser', auth.getUserAll)
+router.get('/test', auth.userTest)
+router.post('/register' , auth.register)
+router.post('/login', auth.login)
 
 
 

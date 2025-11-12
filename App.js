@@ -1,14 +1,19 @@
 const express = require('express')
 const app = express()
 const config = require("./bin/Config")
-const db = require('./models')
 const path = require('path')
 const cookieParser = require('cookie-parser')
-const morgan = require('morgan');
 const cors = require('cors')
 const logger = require('morgan')
 const { errorParsor } = require('./midlleware/error-parser')
-const { pathLogger } = require('./midlleware/path-logger')
+const dotenv = require("dotenv");
+dotenv.config();
+
+const connectDB = require("./bin/database");
+
+connectDB();
+require('./models/user');
+
 
 // cors & options
 app.use(cors({
@@ -56,10 +61,6 @@ app.use(errorParsor)
 //****** start serveur ******/
 app.listen(config.port, () => {
     console.log('Express server listening on %d, in %s mode', config.port, app.get('env'))
-})
-
-db.sequelize.sync({alter: true}).then(() => {
-    console.log('Sequelize traitement successfull')
 })
 
 module.exports = app
