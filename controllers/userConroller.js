@@ -1,15 +1,17 @@
-exports.allAccess = (req, res) => {
-    res.status(200).send("Public Content.");
-  };
-  
-  exports.userBoard = (req, res) => {
-    res.status(200).send("User Content.");
-  };
-  
-  exports.adminBoard = (req, res) => {
+const admin = (req, res) => {
     res.status(200).send("Admin Content.");
   };
   
-  exports.moderatorBoard = (req, res) => {
-    res.status(200).send("Moderator Content.");
+const chauffeur = (req, res) => {
+    res.status(200).send("Chauffeur Content.");
   };
+  
+const comptable = (req, res) => {
+    res.status(200).send("comptable Content.");
+  };
+  
+const gestionnaire = (req, res) => {
+    res.status(200).send("gestionnaire Content.");
+  };
+
+  module.exports = { gestionnaire, comptable, chauffeur, admin };

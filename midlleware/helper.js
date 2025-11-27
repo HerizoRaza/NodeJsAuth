@@ -1,5 +1,6 @@
 var sha256 = require('crypto-js/sha256');
 const jwt = require('jsonwebtoken');
+const rolesAutorises = ["admin"]
 
 const verifyAuth = (req, res, next) => {
     try {
@@ -13,18 +14,29 @@ const verifyAuth = (req, res, next) => {
         }
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET || "eysdmfklsdfjsdfsmdflkqdjfqdmflkjdkeifdjd");
         const userId = decodedToken.userId;
+        const role = decodedToken.role
         req.auth = {
-            userId: userId
+            userId: userId,
+            role: role
         };
      next();
     } catch(error) {
         console.error("❌ Erreur de vérification du token :", error.message);
         return res.status(401).json({ message: "Token invalide ou expiré" });
     }
- };
+};
 
 const hashpassword = (password) => {
     return sha256(password).words.toString();
-} 
+}
 
-module.exports = { hashpassword, verifyAuth }
+const verifyRole = (...rolesAutorises) => {
+  return (req, res, next) => {
+    if (!rolesAutorises.includes(req.auth.role)) {
+      return res.status(403).json({ message: "Accès refusé : rôle non autorisé" });
+    }
+    next();
+  };
+};
+
+module.exports = { hashpassword, verifyAuth, verifyRole}
